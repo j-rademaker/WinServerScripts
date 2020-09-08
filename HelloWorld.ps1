@@ -1,7 +1,7 @@
 # Hello World script
 
 param(
-    $Test
+    $Test,
     $Test2
 )
 
