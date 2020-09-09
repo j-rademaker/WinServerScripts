@@ -1,9 +1,8 @@
-# Configure Host
+# Configure Host Script
 
 #region To-Do
 <#
  - IPV6 Support
- - Subnet Mask Support Extended
  - DNs multi input parameter (e.g. -DNS 1.1.1.1,2.2.2.2 instead of -DNS1 1.1.1.1 -DNS2 2.2.2.2)
  - Modularity approach (e.g. Setting Hostname OR IP OR DNS)
  - Implement Logging
@@ -17,6 +16,7 @@ Param (
     $InterfaceIndex,
     $InterfaceName,
     $IP,
+    $SubnetMask,
     $CIDRSubnetMask,
     $Gateway,
     $DNS1,
@@ -46,8 +46,47 @@ function Main {
         Write-Error "Missing IP Address. Specify the 'IP' parameter, and try again."
     }
 
-    if (-not $CIDRSubnetMask) {
-        Write-Error "Missing Subnet Mask. Specify the 'CIDRSubnetMask' parameter, and try again."
+    if (-not $CIDRSubnetMask -and -not $SubnetMask) {
+        Write-Error "Missing Subnet Mask. Specify the 'CIDRSubnetMask' or 'SubnetMask' parameter, and try again."
+    } elseif ($SubnetMask -and -not$CIDRSubnetMask) {
+        switch ($SubnetMask){
+        "255.255.255.255" { $CIDRSubnetMask = 32 }
+        "255.255.255.254" { $CIDRSubnetMask = 31 }
+        "255.255.255.252" { $CIDRSubnetMask = 30 }
+        "255.255.255.248" { $CIDRSubnetMask = 29 }
+        "255.255.255.240" { $CIDRSubnetMask = 28 }
+        "255.255.255.224" { $CIDRSubnetMask = 27 }
+        "255.255.255.192" { $CIDRSubnetMask = 26 }
+        "255.255.255.128" { $CIDRSubnetMask = 25 }
+        "255.255.255.0" { $CIDRSubnetMask = 24 }
+        "255.255.254.0" { $CIDRSubnetMask = 23 }
+        "255.255.252.0" { $CIDRSubnetMask = 22 }
+        "255.255.248.0" { $CIDRSubnetMask = 21 }
+        "255.255.240.0" { $CIDRSubnetMask = 20 }
+        "255.255.224.0" { $CIDRSubnetMask = 19 }
+        "255.255.192.0" { $CIDRSubnetMask = 18 }
+        "255.255.128.0" { $CIDRSubnetMask = 17 }
+        "255.255.0.0" { $CIDRSubnetMask = 16 }
+        "255.254.0.0" { $CIDRSubnetMask = 15 }
+        "255.252.0.0" { $CIDRSubnetMask = 14 }
+        "255.248.0.0" { $CIDRSubnetMask = 13 }
+        "255.240.0.0" { $CIDRSubnetMask = 12 }
+        "255.224.0.0" { $CIDRSubnetMask = 11 }
+        "255.192.0.0" { $CIDRSubnetMask = 10 }
+        "255.128.0.0" { $CIDRSubnetMask = 9 }
+        "255.0.0.0" { $CIDRSubnetMask = 8 }
+        "254.0.0.0" { $CIDRSubnetMask = 7 }
+        "252.0.0.0" { $CIDRSubnetMask = 6 }
+        "248.0.0.0" { $CIDRSubnetMask = 5 }
+        "240.0.0.0" { $CIDRSubnetMask = 4 }
+        "224.0.0.0" { $CIDRSubnetMask = 3 }
+        "192.0.0.0" { $CIDRSubnetMask = 2 }
+        "128.0.0.0" { $CIDRSubnetMask = 1 }
+        "0.0.0.0" { $CIDRSubnetMask = 0 }
+        default { Write-Error "Unsupported Subnet Mask value, defaulting to 255.255.255.0"
+                $CIDRSubnetMask = 24
+            }
+        }
     }
 
     if (-not $Gateway) {
@@ -97,5 +136,4 @@ function Main {
 }
 
 Main
-
 
